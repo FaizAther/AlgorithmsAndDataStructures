@@ -1,0 +1,121 @@
+Comments
+The non recursive functions fare batter compared to the recursive onces on larger inputs where as the recurive ones do better on smaller inputs.
+This could either be because of the stack frames that recrusion has to create of som many function calls, or in issue with my code.
+
+Random GRAPH 1
+	Selection Sort
+	size of 5 1ms
+	size of 10 0ms
+	size of 50 0ms
+	size of 100 3ms
+	size of 500 11ms
+	size of 1000 16ms
+	size of 10000 422ms
+	Insertion Sort
+	size of 5 1ms
+	size of 10 1ms
+	size of 50 0ms
+	size of 100 1ms
+	size of 500 for 10ms
+	size of 1000 for 14ms
+	size of 10000 for 405ms
+	QuickSort
+	size of 5 for 20ms
+	size of 10 for 0ms
+	size of 50 for 3ms
+	size of 100 for 2ms
+	size of 500 for 43ms
+	size of 1000 for 168ms
+	size of 10000 for 1228ms
+	MergeSort
+	size of 5 for q 0ms
+	size of 10 for q 2ms
+	size of 50 for q 8ms
+	size of 100 for q 4ms
+	size of 500 for q 28ms
+	size of 1000 for q 85ms
+	size of 10000 for q 1885ms
+Ascending GRAPH 2
+	Selection Sort
+	size of 5 for q 0ms
+	size of 10 for q 0ms
+	size of 50 for q 0ms
+	size of 100 for q 0ms
+	size of 500 for q 3ms
+	size of 1000 for q 3ms
+	size of 10000 for q 184ms
+	Insertion Sort
+	size of 5 for q 0ms
+	size of 10 for q 0ms
+	size of 50 for q 1ms
+	size of 100 for q 0ms
+	size of 500 for q 6ms
+	size of 1000 for q 2ms
+	size of 10000 for q 88ms
+	Merge Sort
+	size of 5 for q 0ms
+	size of 10 for q 1ms
+	size of 50 for q 2ms
+	size of 100 for q 1ms
+	size of 500 for q 11ms
+	size of 1000 for q 14ms
+	size of 10000 for q 1666ms
+	Quick Sort
+	size of 5 for q 0ms
+	size of 10 for q 0ms
+	size of 50 for q 0ms
+	size of 100 for q 0ms
+	size of 500 for q 8ms
+	size of 1000 for q 12ms
+	size of 10000 for q 79ms
+Decending GRAPH 3
+	Selection Sort
+	size of 5 for q 0ms
+	size of 10 for q 0ms
+	size of 50 for q 1ms
+	size of 100 for q 3ms
+	size of 500 for q 2ms
+	size of 1000 for q 11ms
+	size of 10000 for q 300ms
+	Insertion Sort
+	size of 5 for q 0ms
+	size of 10 for q 0ms
+	size of 50 for q 1ms
+	size of 100 for q 12ms
+	size of 500 for q 35ms
+	size of 1000 for q 27ms
+	size of 10000 for q 720ms
+	Merge Sort
+	size of 5 for q 0ms
+	size of 10 for q 0ms
+	size of 50 for q 2ms
+	size of 100 for q 4ms
+	size of 500 for q 31ms
+	size of 1000 for q 64ms
+	size of 10000 for q 2061ms
+	Quick Sort
+	size of 5 for q 0ms
+	size of 10 for q 0ms
+	size of 50 for q 0ms
+	size of 100 for q 3ms
+	size of 500 for q 39ms
+	size of 1000 for q 44ms
+	size of 10000 for q 1152ms
+
+
+   public static void timeSort() {
+        Random rd = new Random(); // creating Random object
+        Integer[] sizes = {5, 10, 50, 100, 500, 1000, 10000};
+        for (int s : sizes) {
+            Integer[] arr = new Integer[s];
+            for (int i = 0; i < arr.length; i++) {
+                arr[i] = rd.nextInt(); // storing random integers in an array
+            }
+            SortingAlgorithms.selectionSort(arr, true);
+            long start = System.currentTimeMillis();
+            SortingAlgorithms.quickSort(arr, false);
+            long end = System.currentTimeMillis();
+            System.out.println("size of " + s + " for q " +
+                    (end - start) + "ms");
+        }
+    }

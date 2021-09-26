@@ -1,0 +1,596 @@
+\documentclass[a4,13pt]{extarticle}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2cm]{geometry}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage[]{algpseudocode}
+\usepackage{hyperref}
+\usepackage{color}
+
+\usepackage{xcolor}
+\usepackage{listings}
+
+\usepackage[all]{xy}
+
+
+\definecolor{mGreen}{rgb}{0,0.6,0}
+\definecolor{mGray}{rgb}{0.5,0.5,0.5}
+\definecolor{mPurple}{rgb}{0.58,0,0.82}
+\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{CStyle}{
+    backgroundcolor=\color{backgroundColour},   
+    commentstyle=\color{mGreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{mGray},
+    stringstyle=\color{mPurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=3pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=C
+}
+
+\definecolor{blue}{rgb}{0,0,0.5}
+\newenvironment{Solution}{\color{blue}\textbf{Solution:}}{}
+
+\title{COMP3506 Homework 1 Weighting: 15\%}
+\author{Mohammad Faiz ATHER (s46484813) }
+\date{Due date: 21st August 2020, 11:55 pm}
+
+\begin{document}
+
+\maketitle
+\if 0
+\section*{Overview}
+This purpose of this assignment is for you to become familiar with understanding the main concepts and notation of asymptotic analysis of algorithms, to gain practice writing simple mathematical proofs, to learn how to read and write pseudocode algorithms, and to practice using binary search and writing and analysing recursive algorithms.
+
+\section*{Marks}
+This assignment is worth 15\% of your total grade. COMP3506 students will be marked on questions 1 to 4 out of \textbf{50 marks}. COMP7505 are required to additionally do question 5 and will be marked out of \textbf{60 marks}.\\\\
+Partial marks \textit{may} be awarded for partially correct answers and answers lacking justification where it is required.
+
+\section*{Submission Instructions}
+\begin{itemize}
+	\item Your answers to the written questions should be submitted as a file called \textbf{A1-[Your Student Number Here].pdf} via the \texttt{Homework 1 - Written} submission. Do not include your full name in your pdf submission.
+	\item \textbf{Hand-written answers will not be marked.} If you are comfortable with the \LaTeX\  typesetting
+	      system, it is strongly recommended that you write your answers using it, however it is not a requirement.
+	\item Your solution to Q3a will be submitted via Gradescope to the \texttt{Homework 1 - Q3 Programming} submission. You should only submit your completed \texttt{ArrayCartesianPlane.java} file. No marks will be awarded for non-compiling submissions, or submissions which import non-supported 3rd party libraries. You should follow all constraints laid out in question 3 or risk losing marks for the question.
+\end{itemize}
+
+\section*{Late Submissions and Extensions}
+Late submissions will not be accepted. It is your responsibility to ensure you have submitted your
+work well in advance of the deadline (taking into account the possibility of computer, internet, or Gradescope
+issues). You are allowed to submit multiple times, and only the latest submission before the deadline will be marked. See the ECP for information about extensions.
+\section*{Academic Misconduct}
+This assignment is an individual assignment. Posting questions or copying answers from the internet is considered cheating, as is sharing your answers with classmates. All your work (including code) will be analysed by sophisticated plagiarism detection software. \\\\
+Students are reminded of the University’s policy on student misconduct, including plagiarism. See
+the course profile and the School web page:
+\url{http://www.itee.uq.edu.au/itee-student-misconduct-including-plagiarism}.\\
+
+\newpage 
+
+\fi 
+\section*{Questions}
+
+\begin{enumerate}
+	\item   
+	      Consider the following algorithm, \textsc{CoolAlgorithm}, which takes a \textbf{positive} integer $n$ and outputs another integer. 
+	      Recall that `$\&$' indicates the bitwise AND operation and `$a >> b$' indicates the binary representation of $a$ shifted to the right $b$ times.
+	      	      
+	      \begin{algorithm}
+	      	\begin{algorithmic}[1]
+	      		\Procedure{CoolAlgorithm}{int n}
+	      		\State $sum \gets 0$
+	      		\If {$n$ \% $2 == 0$}
+	      		\For{$i=0$ to $n$} 
+	      		\For {$j=i$ to $n^2$}
+	      		\State $sum \gets sum + i + j$ 
+	      		\EndFor 
+	      		\EndFor
+	      		\Else
+	      		\While{$n > 0$}
+	      		\State $sum \gets sum$ + $(n$ \& $1)$
+	      		\State $n \gets (n >> 1)$
+	      		\EndWhile
+	      		\EndIf
+	      		\State \textbf{return} $sum$
+	      		\EndProcedure
+	      	\end{algorithmic}
+	      \end{algorithm}
+	      	          
+	      Note that the runtime of the above algorithm depends not only on the size of the input $n$, but also on a numerical property of $n$. 
+	      For all of the following questions, you must assume that $n$ is a positive integer.
+	      	      
+	      \begin{enumerate}
+	      	\item (3 marks) Represent the running time (i.e. the number of primitive operations) of the algorithm 
+	      	      when the input $n$ is \textbf{odd}, as a mathematical function called $T_{\text{odd}}(n)$. State all assumptions made and explain all your reasoning.
+	      	      
+	      	      \begin{Solution}
+	      	      
+	      	      For $n$ being odd the the execution will jump to the following block of code.
+	      	      \def \theLog {\left \lceil{\log_2(n)}\right \rceil}
+	      	      \def \runTime {6*\theLog{} + 2}
+	      	      \begin{algorithm}
+                        \begin{algorithmic}
+        	      		  \State $sum \gets 0$ \Comment{1 primitive operation.}
+                          \While{$n > 0$} \Comment{executed $\theLog{} + 1$ times.}
+                          \State $sum \gets sum$ + $(n$ \& $1)$ \Comment{bit-wise, addition, set -- $(1+1+1) * \theLog{} $.}
+                          \State $n \gets (n >> 1)$ \Comment{effectively division by 2 (right shifting by 1) and set -- $(1+1) * \theLog{}$.}
+                          \EndWhile \Comment{Overall primitive operations are still $\runTime{}{}$.}
+                        \end{algorithmic}
+                    \end{algorithm}
+                    
+	      	      Assumption: Considering the code is being run on a system with the binary number representation is such that the MSB(most significant bit) is the left most bit. In that case the operation on line 12 is division by 2.
+	      	    
+	      	    It will take $\left \lceil{\log_2(n)}\right \rceil $ divisions  for $n$ to become equal to zero as $0$'s will be introduced to the binary number from the MSB making LSB's fall off.
+	      	    
+	      	    The approximate running time, $T_{\text{odd}}(n)$ is $f(n) = \runTime{}$
+	      	        
+	      	      \end{Solution}
+	      	    
+	      	      	      	                  
+	      	\item (2 marks) Find a function $g(n)$ such that $T_{\text{odd}}(n)\in O(g(n))$. 
+	      	      Your $g(n)$ should be such that the Big-O bound is as tight as possible (e.g. no constants or lower order terms). 
+	      	      Using the formal definition of Big-O, prove this bound and explain all your reasoning. 
+	      	      	      	                  
+	      	      (Hint: you need to find values of $c$ and $n_0$ to prove the Big-O bound you gave is valid).
+	      	      
+	      	       \begin{Solution}
+ 	      	      \def \runTime {6 * \left \lceil{\log_2(n)}\right \rceil + 2}
+
+	      	       
+	      	       $f(n) \le c*g(n) \rightarrow \runTime{} \le c*g(n) \rightarrow c*g(n) - (\runTime{}) \geq 0$.
+	      	       
+	                Let $g(n)$ be equal to $\left \lceil{\log_2(n)}\right \rceil$. 
+	                
+	               $ (c - 6) * \left \lceil{\log_2(n)}\right \rceil - 2 \geq 0 \rightarrow (c - 6) * \left \lceil{\log_2(n)}\right \rceil \geq 2$.
+	               
+	               Now for $c > 0$ and $n \geq n_{\text{0}} \rightarrow n_{\text{0}} = 3$ since this is the odd case and to avoid logarithm of $1$ that is $0$ and $c = 8$ to keep the function positive and greater than two and ceiling functioncan be ignored.
+	               
+	               Therefore, $T_{\text{odd}}(n), f(n) = \runTime{}$ is $O(\log_2(n)))$
+	      	       
+	      	      \end{Solution}
+	      	      	      	                  
+	      	\item (2 marks) Similarly, find the tightest Big-$\Omega$ bound of $T_{\text{odd}}(n)$ and use the formal definition of Big-$\Omega$ to prove the bound is correct. Does a Big-$\Theta$ bound for $T_{\text{odd}}(n)$ exist? If so, give it. If not, explain why it doesn't exist.
+	      	
+	      	\begin{Solution}
+	      	\def \runTime {6*\left \lceil{\log_2(n)}\right \rceil+2}
+
+	      	       
+	      	       $f(n) \geq c*g(n) \rightarrow \runTime{} \geq c*g(n) \rightarrow \runTime{} - c*g(n) \le 0$.
+	      	       
+	                Let $g(n)$ be equal to $\left \lceil{\log_2(n)}\right \rceil$. 
+	                
+	               $ (6 - c) * \left \lceil{\log_2(n)}\right \rceil + 2\le 0 \rightarrow (6 - c) * \left \lceil{\log_2(n)}\right \rceil \le -2 \rightarrow (c - 6) * \left \lceil{\log_2(n)}\right \rceil \geq 2 $.
+	               
+	               Now for $c > 0$ and $n \geq n_{\text{0}} \rightarrow n_{\text{0}} = 3$ since this is the odd case and to avoid logarithm of $1$ that is $0$ and $c = 8$ to keep the function positive and greater than two and ceiling function can be ignored.
+	               
+	               Therefore, $T_{\text{odd}}(n), f(n) = \runTime{}$ is $\Omega(\log_2(n))$
+	               
+	               Since $f(n)$ is $O(\log_2(n))$ and $\Omega(\log_2(n))$ fulfilling the condition $c_{\text{1}}*g(n) \le f(n) \le c_{\text{2}} * g(n)$ for all $n \geq n_{\text{0}}$ and $c_{\text{1}},c_{\text{2}} > 0$ and hence, $T_{\text{odd}}(n), f(n) = \runTime{}$ is $\Theta(\log_2(n))$.
+	      	       
+	      	\end{Solution}
+	      	      	      	                  
+	      	      	      	                  
+	      	\item (3 marks) Represent the running time (as you did in part (a)) for the algorithm when the input $n$ is \textbf{even}, as a function called $T_{\text{even}}(n)$. State all assumptions made and explain all your reasoning. Also give a tight Big-O and Big-$\Omega$ bound on $T_{\text{even}}(n)$. You do \textbf{not} need to formally prove these bounds.
+	      	
+	      	\begin{Solution}
+	      	\begin{algorithm}
+	      	\begin{algorithmic}
+	      		\State $sum \gets 0$ \Comment{set, primitive operation count is -- $1$}
+	      		\If {$n$ \% $2 == 0$} \Comment{ mod and check -- $2$}
+	      		\For{$i=0$ to $n$} \Comment{$n$}
+	      		\For {$j=i$ to $n^2$} \Comment{ $n^2$}
+	      		\State $sum \gets sum + i + j$ \Comment{$n*n^2 - \sum_{i=0}^{n-1}i \rightarrow n^3 - (n-1)((n-1)+1)/2 \rightarrow (2*n^3-n^2+n)/2 $}
+	      		\EndFor \Comment{$(2*n^3-n^2+n)/2+n^2$}
+	      		\EndFor \Comment{adding everything up $(2*n^3-n^2+n)/2+n^2+n+2+1 \rightarrow 2*n^3 + (n^2)/2 + (3/2)*n+3$}
+	      		\EndIf
+	      	 \end{algorithmic}
+            \end{algorithm}
+            
+            $T_{\text{even}}(n)$, $f(n) = 2*n^3 + (n^2)/2 + (3/2)*n+3$
+            
+            Dropping the lower order terms and constants gives us $T_{\text{even}}(n)$, $f(n)$ is $O(n^3)$ and $\Omega(n^3)$
+            
+	      	\end{Solution}
+	      	      	      	                  
+	      	\item (2 marks) The running time for the algorithm has a best case and worst case, and which case occurs for a 
+	      	      given input $n$ to the algorithm depends on the parity of $n$.
+	      	      	      	                  
+	      	      Give a Big-O bound on the \textbf{best case} running time of the algorithm, and a Big-$\Omega$ bound on 
+	      	      the \textbf{worst case} running time of the algorithm (and state which parity of the input corresponds with which case).
+	        \begin{Solution}
+	        \begin{align*}
+	      	      	T(n)=\begin{cases}
+	      	      	T_{\text{even}}(n) & \text{if $n$ is even, worst case with $O(n^3)$.} \\
+	      	      	T_{\text{odd}}(n)  & \text{if $n$ is odd best case with $\Omega(\log_2(n))$.}\\
+	      	      	\end{cases}
+	      	      \end{align*}
+	      	\end{Solution}
+	      	      	      \newpage
+	      	\item (2 marks) We can represent the runtime of the entire algorithm, say $T(n)$, as
+	      	      \begin{align*}
+	      	      	T(n)=\begin{cases}
+	      	      	T_{\text{even}}(n) & \text{if $n$ is even} \\
+	      	      	T_{\text{odd}}(n)  & \text{if $n$ is odd}  \\
+	      	      	\end{cases}
+	      	      \end{align*}
+	      	      Give a Big-$\Omega$ and Big-$O$ bound on $T(n)$ using your previous results. If a Big-$\Theta$ bound for the entire algorithm exists, describe it. If not, explain why it doesn’t exist.
+	      	      
+	      	\begin{Solution}
+	      	No, Big-$\Theta$ does not exist as the entire function for $T(n)$ is actually piece-wise for the odd and even case with different upper and lower bounds.
+	      	
+	      	$T(n)$ is $\Omega(\log_2(n))$ and $T(n)$ is $O(n^3)$, hence Big-$\Theta$ does not exit.
+	      	\end{Solution}
+	      	      	      	                  
+	      	\item (2 marks) Your classmate tells you that Big-O represents the worst case runtime of an algorithm, and similarly that 
+	      	      Big-$\Omega$ represents the best case runtime. Is your classmate correct? Explain why/why not. 
+	      	      Your answers for (e) and (f) \textit{may} be useful for answering this.
+	      	      
+	      	\begin{Solution}
+	      	Yes and no. Although the answer will not be very accurate as we drop the lower order terms and the constants that may affect the actual $T(n)$ but the Big-$\Omega$ will provide a $g(n)$ that are a class of functions that will give us a estimate of the best case as it is a bound on the entire $T(n)$ from below multiplied by a $c>0$. And similarly a Big-$O$ will give us a $h(n)$ multiplied with a constant $d>0$ that will be an estimate for the upper bound of the entire $T(n)$ giving us a estimate of the worst case.
+	      	
+	      	So, final answer is yes as for big values of $n$ we can get a fair insight on how the algorithm behaves in best and worst cases. Big values of $n$ are the ones that are actually useful.
+	      	\end{Solution}
+	      	      	      	                  
+	      	\item (1 mark) Prove that an algorithm runs in $\Theta (g(n))$ time if and only if its worst-case running time 
+	      	      is $O(g(n))$ and its best-case running time is $\Omega(g(n))$.
+	      	      
+	      	\begin{Solution}
+	      	
+	      	Worst case(high) bounded from above by $c_{\text{1}} * g(n)$ by $O(g(n))$;
+	      	
+	      	Best case(low) bounded from below by $c_{\text{2}} * g(n)$ by $\Omega(g(n))$;
+	      	
+	      	i.e. $c_{\text{2}} * g(n) \le T(n)=f(n) \le c_{\text{1}} * g(n)$ | $c_{\text{1}}$,$c_{\text{2}}>0$,  $n\geq n_{\text{0}}$;
+	      	
+	      	Hence, $T(n)=f(n)$ is $\Theta(g(n))$.
+	      	
+	      	
+	      	\end{Solution}
+	      	      	      	                  
+	      \end{enumerate}
+	      	          
+	      \newpage 
+	      	
+	\item 
+	      \begin{enumerate}
+	      	\item (4 marks) Devise a \textbf{recursive} algorithm that takes a sorted array $A$ of length $n$, containing distinct (not necessarily positive) integers, and determines whether or not there is a position $i$ (where $0\leq i < n$) such that $A[i] = i$.
+	      	      \begin{itemize}
+	      	      	\item Write your algorithm in pseudocode (as a procedure called $\textsc{FindPosition}$ that takes an input array $A$ and returns a boolean).
+	      	      	\item Your algorithm should be as efficient as possible (in terms of time complexity) for full marks.
+	      	      	\item You will not receive any marks for an iterative solution for this question. 
+	      	      	\item You are permitted (and even encouraged) to write helper functions in your solution.
+	      	      \end{itemize}
+	      	      
+	      	\begin{Solution}
+	      	    \lstinputlisting[language=C, firstline=27, lastline=42]{findPosition.c}
+	      	\end{Solution}
+	      	
+	      	\item (1 mark) Show and explain all the steps taken by your algorithm (e.g. show all the recursive calls, if conditions, etc) for the following input array: $[-1,0,2,3,10,11,23,24,102]$.
+	      	
+	      	\begin{Solution}
+	      	
+    	    \xymatrix{
+            FindPosition(A, 1, 3) \ar[d] \ar[dr] &   &   \\
+                m=(1+3)/2    & if (A[2]==2 )\text{ }return\text{ }2; }
+                
+            \xymatrix{
+            FindPosition(A, 0, 3) \ar[d] \ar[dr] &   &   \\
+                m=(0+3)/2    & if (A[1] < 1)\text{ }return\text{ }FindPosition (A,1,3); 
+            }
+            
+            \xymatrix{
+            FindPosition(A, 0, 8) \ar[d] \ar[dr] &   &   \\
+                m=(0+8)/2    & if (A[4] > 4)\text{ }return\text{ }FindPosition (A,0,3); 
+            }
+	      	\end{Solution}
+	      	
+	      	\newpage
+	      	      	      	                  
+	      	\item (3 marks) Express the worst-case running time of your algorithm as a mathematical recurrence, $T(n)$, and explain your reasoning. 
+	      	      Then calculate a Big-O (or Big-$\Theta$) bound for this recurrence and show all working used to find this bound 
+	      	      (Note: using the Master Theorem below for this question will not give you any marks for this question).
+	      	      
+	      	      
+	        \begin{Solution}
+	        \begin{align*}
+	      	      	T(n)=\begin{cases}
+	      	      	O(1) & \text{if $n \le 1$} \\
+	      	      	O(1) + T(n/2) & \text{if $n > 1$}  \\
+	      	      	\end{cases}
+	      	      \end{align*}
+	        $T(n) = O(1) + T(n/2)$
+	        
+	        $ = O(1) + (O(1) + T(n/4))$
+	        
+	        $ = O(1) + (O(1) + (O(1) + T(n/8)))$
+	        
+	        $...$
+	        
+	        $=O(1) + O(1) + O(1) + ... + T(n/n)$
+	        
+	        $=O(1) + O(1) + O(1) + ... + O(1)$; $\log_2(n)$ times as the divisor increases by a factor of 1/2 each time. Halve of the array is being eliminated from search area each recursive function call.
+	       
+	        Therefore, the answer for the worst case is $\log_2(n)$.
+
+	      	\end{Solution}
+	      	
+	      	\item The master theorem is a powerful theorem that can be used to quickly calculate a tight asymptotic bound on a mathematical recurrence. A simplified version is stated as follows: Let $T(n)$ be a non-negative function that satisfies
+	      	      \begin{align*}
+	      	      	T(n)                              & = \begin{cases}    
+	      	      	aT\left(\frac{n}{b}\right) + g(n) & \text{for $n > k$} \\
+	      	      	c                                 & \text{for $n=k$}   
+	      	      	\end{cases}
+	      	      	\intertext{where $k$ is a non-negative integer, $a\geq 1$, $b\geq 2$, $c > 0$, and $g(n)\in \Theta(n^d)$ for $d\geq 0$. Then,}
+	      	      	T(n)                              & \in \begin{cases}  
+	      	      	\Theta(n^d)                       & \text{if $a<b^d$}  \\
+	      	      	\Theta(n^d\log n)                 & \text{if $a=b^d$}  \\
+	      	      	\Theta(n^{\log_b a})              & \text{if $a>b^d$}  
+	      	      	\end{cases}
+	      	      \end{align*}
+	      	      \begin{enumerate}
+	      	      	\item (1 mark) Use the master theorem, as stated above, to find a Big-$\Theta$ bound (and confirm your already found Big-O) for the recurrence you gave in (b). Show all your working.
+	      	      	
+	      	      	\begin{Solution}
+	      	      	\begin{align*}
+	      	      	T(n)=\begin{cases}
+	      	      	1*T(n/2)+1, & \text{if $n > 1$}; \\
+	      	      	1,  & \text{if $n = 1$.}\\
+	      	      	\end{cases}
+	      	      \end{align*}
+	      	      $a=1, b=2,g(n)=1,c=1;$
+	      	      
+	      	      $g(n) \in \Theta(n^d)$ where $d\geq0$, $d = 0$
+	      	      
+	      	      $g(n) \in \Theta(n^0) \in \Theta(1)$
+	      	      
+	      	      $a=b^d$ is condition $2$,
+	      	      
+	      	      So $T(n) \in \Theta(n^d\log(n)) \in \Theta(\log(n))$ for $k$ non-negative being $1$ by information about $T(1) = O(1)$.
+	      	        \end{Solution}
+	      	
+	      	      	\item (1 mark) Use the master theorem to find a Big-$\Theta$ bound for the recurrence defined by $$T(n)=5 \cdot T\left(\frac{n}{3}\right) + n^2 + 2n$$ and $T(1)=100$. Show all working.
+	      	      	      	
+	      	      	\begin{Solution}
+	      	      	\begin{align*}
+	      	      	T(n)=\begin{cases}
+	      	      	5*T(n/3)+n^2+2n, & \text{if $n > 1$}; \\
+	      	      	100,  & \text{if $n = 1$.}\\
+	      	      	\end{cases}
+	      	      \end{align*}
+	      	      $a=5, b=3,g(n)=n^2+2n,c=100;$
+	      	      
+	      	      $g(n) \in \Theta(n^d)$ where $d\geq0$, $d = 2$
+	      	      
+	      	      $g(n) \in \Theta(n^2)$
+	      	      
+	      	      $a<b^d$ is condition $1$,
+	      	      
+	      	      So $T(n) \in \Theta(n^d) \in \Theta(n^2)$ for $k$ non-negative being $100$ by information about $T(1) = 100$.
+	      	        \end{Solution}
+	      	
+	      	      	\item (1 mark) Use the master theorem to find a Big-$\Theta$ bound for the recurrence defined by $$T(n)=8 \cdot T\left(\frac{n}{4}\right) + 5n + 2\log n +\frac 1n $$ and $T(1)=1$. Show all working.
+	      	      	
+	      	      	\begin{Solution}
+	      	      	
+	      	      	\begin{align*}
+	      	      	T(n)=\begin{cases}
+	      	      	8*T(n/4)+5n+2\log(n)+1/n, & \text{if $n > 1$}; \\
+	      	      	1,  & \text{if $n = 1$.}\\
+	      	      	\end{cases}
+	      	      \end{align*}
+	      	      $a=8, b=4,g(n)=5n+2\log(n)+1/n,c=1;$
+	      	      
+	      	      $g(n) \in \Theta(n^d)$ where $d\geq0$, $d = 1$
+	      	      
+	      	      $g(n) \in \Theta(n^1)$
+	      	      
+	      	      $a>b^d$ is condition $3$,
+	      	      
+	      	      So $T(n) \in \Theta(n^{log_b(a)}) \in \Theta(n^{log_4(8)})  \in \Theta(n^{2log_4(4)}) \in \Theta(n^{2})$ for $k$ non-negative being $1$ by information about $T(1) = 1$.
+	      	      	
+	      	        \end{Solution}
+	      	      \end{enumerate}
+	      	      	      	                  
+	      	\item (2 marks) Rewrite (in pseudocode) the algorithm you devised in part (a), but this time \textbf{iteratively}. 
+	      	      Your algorithm should have the same runtime complexity of your recursive algorithm. Briefly explain how you determined the runtime complexity of your iterative solution.
+	      	      
+	      	\begin{Solution}
+	      	\lstinputlisting[language=C, firstline=45, lastline=58]{findPosition.c}
+	      	\end{Solution}
+	      	      	      	                  
+	      	\item (2 marks) While both your algorithms have the same runtime complexity, one of them will usually be faster in practice 
+	      	      (especially with large inputs) when implemented in a procedural programming language (such as Java, Python or C). 
+	      	      Explain which version of the algorithm you would implement in Java - and why - if speed was the most important factor to you. 
+	      	      You may need to do external research on how Java method calls work in order to answer this question in full detail. 
+	      	      Cite any sources you used to come up with your answer.\\
+	      	      	      	                  
+	      	      In addition, explain and compare the space complexity of your both your recursive solution 
+	      	      and your iterative solution (also assuming execution in a Java-like language).
+	      	      
+	        \begin{Solution}
+	        The itertive solution would be more efficient for the JVM as it would have to do extra work for to create the multiple function stacks increasing the load on the CPU and the operating system by increasing the instructions to setup stacks and destroy stacks for the $\log_2(n)s$ times the recursive function is called. Same goes for C or python a recursive solution creates overhead on the CPU, while the iterative solution will run in the same time complexity with reduced overhead of function stacks as well as reduced memory usage compared to recursive where memory is being held by the previous not yet destroyed function stacks to keep track of variables.
+	      	\end{Solution}
+	      \end{enumerate}
+	      	              
+	      \newpage 
+	      	          
+	\item
+	      In the support files for this homework on Blackboard, we have provided an interface called \texttt{CartesianPlane} which describes a 2D plane which can hold elements at $(x,y)$ coordinator pairs, where $x$ and $y$ could potentially be negative. 
+	      \begin{enumerate}
+	      	\item (5 marks) In the file \texttt{ArrayCartesianPlane.java}, you should implement the methods in the interface \texttt{CartesianPlane} using a multidimensional array as the underlying data structure.
+	      	      	      	                      
+	      	      Before starting, ensure you read and understand the following:
+	      	      \begin{itemize}
+	      	      		      	      	
+	      	      	\item Your solution will be marked with an automated test suite. 
+	      	      	      	      	      	                          
+	      	      	\item Your code will be compiled using Java 11.
+	      	      	      	      	      	                          
+	      	      	\item Marks may be deducted for poor coding style. You should follow the CSSE2002 style guide, which can be found on Blackboard.
+	      	      	      	      	      	                          
+	      	      	\item  A sample test suite has been provided in \texttt{CartesianPlaneTest.java}. 
+	      	      	      This test suite is not comprehensive and there is no guarantee that passing these will ensure passing 
+	      	      	      the tests used during marking. It is recommended, but not required, that you write your own tests for your solution.
+	      	      	      	      	    
+	      	      	      	   	                          
+	      	      	\item You may not use anything from the Java Collections Framework (e.g. ArrayLists or HashMaps). If unsure about whether you can use a certain import, ask on Piazza.
+	      	      	                               
+	      	      	\item Do not add or use any static member variables. Do not add any \textbf{public} variables or methods.
+	      	      	\item Do not modify the interface (or \texttt{CartesianPlane.java} at all), or any method signatures in your implementation.
+	      	      \end{itemize}
+	      	      	      	                      
+	      	\item (1 mark) State (using Big-O notation) the memory complexity of your implementation, 
+	      	      ensuring you define all variables you use. Briefly explain how you came up with this bound.
+	      	      
+	        \begin{Solution}
+	        
+	        T[m][n] grid; $m*n * int$
+	        
+             int minimumX;
+             
+             int maximumX;
+             
+             int minimumY;
+             
+             int maximumY;
+             
+             $4 * int$
+             
+             Total is $m*n + 4 \in O(m*n)$ 
+	      	\end{Solution}
+	      	      	      	                      
+	      	\item (1 mark) Using the bound found above, evaluate the overall memory efficiency of your implementation. 
+	      	      You should especially consider the case where your plane is very large but has very few elements.
+	      	
+	      	\begin{Solution}
+	      	Not good, better to store as a 2D linked list sorted by x and y with coordinates inside the struct, this way the number of elements of type T added will be stored only compared to $m*n$ for space complexity this method is very efficient.
+	      	\end{Solution}
+	      	      	      	                      
+	      	\item (3 marks) State (using Big-O notation) the time complexity of the following methods:
+	      	      	      	                      
+	      	      \begin{itemize}
+	      	      	\item \texttt{add}
+	      	      	\item \texttt{get}
+	      	      	\item \texttt{remove}
+	      	      	\item \texttt{resize}
+	      	      	\item \texttt{clear}
+	      	      \end{itemize}
+	      	      	      	                      
+	      	      Ensure you define all variables used in your bounds, and briefly explain how you came up with the bounds. 
+	      	      State any assumptions you made in determining your answers. You should simplify your bounds as much as possible.
+	      	      
+	      	\begin{Solution}
+	      	\item \texttt{add} $O(1)$
+	      	      	\item \texttt{get} $O(1)$
+	      	      	\item \texttt{remove} $O(1)$
+	      	      	\item \texttt{resize} $O(m*n)$
+	      	      	\item \texttt{clear} $O(m*n)$
+	      	\end{Solution}
+	      \end{enumerate}
+	      	              
+	      	              
+	      \newpage 
+	      	
+	\item  
+	      The UQ water well company has marked out an $n\times n$ grid on a plot of land, in which their hydrologists know exactly 
+	      one square has a suitable water source for a water well. They have access to a drill, which uses drill bits and can test one 
+	      square at a time. Now, all they they need is a strategy to find this water source.
+	      	         
+	      Let the square containing the water source be $(s_x,s_y)$. After drilling in a square $(x,y)$, certain things can 
+	      happen depending on where you drilled.
+	      \begin{itemize}
+	      	\item If $x > s_x$ or $y > s_y$, then the drill bit breaks and must be replaced.
+	      	\item If $x=s_x$ or $y=s_y$, the hydrologists can determine which direction the water source is in.
+	      \end{itemize}
+	      	              
+	      Note that both the above events can happen at the same time. Below is an example with $n=10$ and $(s_x, s_y)=(3, 4)$. 
+	      The water source is marked with \textsf{\textbf{S}}. Drilling in a shaded square will break the drill bit, and drilling in 
+	      a square with a triangle will reveal the direction.
+	      \begin{center}
+	      	\includegraphics[width=0.4\textwidth]{a1q4new.png}
+	      \end{center}
+	      	              
+	      \begin{enumerate} 
+	      	\item (3 marks) The UQ water well company have decided to hire you - an algorithms expert - to devise a algorithm 
+	      	      to find the water source as efficiently as possible. \\
+	      	      	      	              
+	      	      Describe (you may do this in words, but with sufficient detail) an algorithm to solve the problem of finding the water source, 
+	      	      assuming you can break as many drill bits as you want. Provide a Big-O bound on the number of holes you need to drill to find 
+	      	      it with your algorithm. Your algorithm should be as efficient as possible for full marks.\\\\
+	      	      You may consult the hydrologists after any drill (and with a constant time complexity cost to do so) to see if 
+	      	      the source is in the drilled row or column, and if so which direction the water source is in.\\\\
+	      	      (Hint: A linear time algorithm is not efficient enough for full marks.)
+	      	
+	      	\begin{Solution}
+	      	
+	      	Approach:
+	      	Two dimensional binary search moving in the diagonal direction.
+	      	
+	      	At most $\log(n^2)=2\log(n) \in O(log(n))$
+	      	
+	        If in one of the x,y direction we land on the arrows we will no longer move in that direction as we know we are on the right row or column.
+	        
+	        Clarification: in the code below for part a) and b) the axis is considered to be $(0,0)$ is the top-left most. The point $(1,0)$ is the point to the right of $(0,0)$ in the top column, i.e. moving in right direction for a increase in x.
+	        Also, the array is inverted to axis, i.e. $arr[y_value][x_value]$
+	      	
+	      	\newpage
+	      	    \lstinputlisting[language=C, firstline=108, lastline=148]{search.c}
+	      	\end{Solution}
+	      	
+	        \newpage
+	      	      	      	              
+	      	\item 
+	      	      (5 marks) The company, impressed with the drilling efficiency of your algorithm, assigns you to another $n \times n$ grid, 
+	      	      which also has a water source you need to help find. However, due to budget cuts, this time you can only break $2$ drill 
+	      	      bits (at most) before finding the source. (Note that you are able to use a $3$rd drill bit, but are not allowed to ever break it).
+	      	      	      	              
+	      	      Write \textbf{pseudocode} for an algorithm to find the source while breaking at most $2$ drill bits, and give a tight Big-O 
+	      	      bound on the number of squares drilled (in the worst case). If you use external function calls (e.g. to consult the hydrologist, 
+	      	      or to see if the cell you drilled is the source) you should define these, their parameters, and their return values. \\\\
+	      	      Your algorithm's time complexity should be as efficient as possible in order to receive marks. 
+	      	      (Hint: A linear time algorithm is not efficient enough for full marks.)
+
+	      	\begin{Solution}
+	      	
+	      	$O(n^{1/2})$ by the int $j = calculateJump(n)$ function dividing the array up going up the diagonal i.e. $n$ by $n$ means $n*\sqrt{2}$ top right most point.
+	      	
+	      	from $n=j(j+1)/2$ formula getting $j=(2*n+0.25)^{1/2}-0.5$ taking at most $2$ bits drilled and that is $\in O(n^{1/2})$ being better than $O(n)$ because if $1$ bit breaks we go switch to iterative search.
+	      	
+	      	So our first jump in the diagonal direction by splitting the jumps in horizontal and vertical is $j$, $j-1$, $j-2$, ..., $0$, giving us a total of $n$ and $n$ in the x and y directions and $n*\sqrt{2}$ in the diagonal if we never break a drill bit meaning the $(n,n)$ is where the $S$ was and this value is bounded by $j=(2*n+0.25)^{1/2}-0.5$ so if we give $n$ as $n*\sqrt{2}$ we still get $O(\sqrt{n})$ even if we break a drill bit we would only have to check that $j$ many spots iterative.
+	      	\newpage    
+                \lstinputlisting[language=C, firstline=101, lastline=161]{fastSearch.c}
+	      	\end{Solution}
+	      	      	      	              
+	      \end{enumerate}
+	      	              
+	      	              
+	      \newpage 
+
+	      	          
+\end{enumerate}
+----This is the end of question 4----
+
+
+All of the code with minimal tests are given below. To aid in explanation of functions of questions and are not part of the answers, this just provides reference.
+
+compilation.txt
+\lstinputlisting[style=CStyle]{compilation.txt}
+findPosition.c Question 2
+\lstinputlisting[style=CStyle]{findPosition.c}
+search.c Question 4
+\lstinputlisting[style=CStyle]{search.c}
+fastSearch.c Question 4
+\lstinputlisting[style=CStyle]{fastSearch.c}
+\end{document}

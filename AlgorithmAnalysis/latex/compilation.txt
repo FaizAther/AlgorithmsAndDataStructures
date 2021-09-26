@@ -1,0 +1,2 @@
+gcc -o search search.c -Wall -Werror -pedantic -lm -g -pg; ./search
+gcc -o eggSearch eggSearch.c -Wall -Werror -pedantic -lm -g -pg; ./eggSearch
